@@ -25,6 +25,10 @@ jobs:
           sudo apt-get install -y libssl-dev
           echo "OPENSSL_DIR=/usr/lib/ssl" >> $GITHUB_ENV
 
+      - name: Debug Sources List
+        if: matrix.arch == 'aarch64'
+        run: cat /etc/apt/sources.list
+
       - name: Install Gcc
         if: matrix.arch == 'aarch64'
         run: |
