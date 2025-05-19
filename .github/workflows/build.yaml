@@ -20,22 +20,14 @@ jobs:
         uses: actions/checkout@v2
 
       - run: |
+          sudo dpkg --add-architecture arm64
           sudo apt-get update
-          ls -alR /etc/apt/sources.list.d
-
-      - name: Setup OpenSSL
-        if: matrix.arch == 'x86_64'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libssl-dev
+          sudo apt-get install -y libssl-dev gcc-aarch64-linux-gnu
           echo "OPENSSL_DIR=/usr/lib/ssl" >> $GITHUB_ENV
 
       - name: Setup for aarch64
         if: matrix.arch == 'aarch64'
         run: |
-          dpkg --add-architecture arm64
-          sudo apt-get update
-          sudo apt-get install -y gcc-aarch64-linux-gnu libssl-dev:arm64
           echo "export CC_aarch64-unknown-linux-musl=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
 
       - name: Setup Rust
