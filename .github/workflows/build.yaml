@@ -20,7 +20,8 @@ jobs:
         uses: actions/checkout@v2
 
       - run: |
-          sed -i '' '/^http:\/\//d' /etc/apt/apt-mirrors.txt
+          run apt-get udpate
+          ls -alR /etc/apt/sources.list.d
 
       - name: Setup OpenSSL
         if: matrix.arch == 'x86_64'
