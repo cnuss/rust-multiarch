@@ -15,6 +15,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86_64, aarch64]
+        platform: [linux/x86_64, linux/arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -24,6 +25,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu
+          echo "export CC_aarch64-unknown-linux-musl=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
 
       - run: |
           rustup toolchain install stable --profile minimal
@@ -36,3 +38,10 @@ jobs:
       - name: Build
         run: |
           cargo build --release --target ${{ matrix.arch }}-unknown-linux-musl
+          mkdir ./dist
+          cp target/${{ matrix.arch }}-unknown-linux-musl/release/rust-multiarch ./dist/rust-multiarch
+
+      - name: Smoke Test
+        run: |
+          docker build -t --platform ${{ matrix.platform }} rust-multiarch .
+          docker run --rm --platform ${{ matrix.platform }} rust-multiarch
