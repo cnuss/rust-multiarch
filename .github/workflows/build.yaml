@@ -29,6 +29,7 @@ jobs:
         if: matrix.arch == 'aarch64'
         run: |
           sudo dpkg --add-architecture arm64
+          sudo sed -i -e 's|http://.*.ubuntu.com|http://ports.ubuntu.com|g' /etc/apt/sources.list
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu libssl-dev:arm64
           echo "export CC_aarch64-unknown-linux-musl=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
