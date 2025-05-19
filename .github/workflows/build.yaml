@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x86_64, aarch64]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - run: |
+          rustup toolchain install stable --profile minimal
+          rustup target add ${{ matrix.arch }}-unknown-linux-musl
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: ${{ matrix.arch }}
+
+      - name: Build
+        run: |
+          cargo build --release --target ${{ matrix.arch }}-unknown-linux-musl
