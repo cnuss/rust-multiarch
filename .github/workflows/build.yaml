@@ -19,7 +19,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - run: |
+          sed -i '' '/^http:\/\//d' /etc/apt/apt-mirrors.txt
+
       - name: Setup OpenSSL
+        if: matrix.arch == 'x86_64'
         run: |
           sudo apt-get update
           sudo apt-get install -y libssl-dev
@@ -28,13 +32,7 @@ jobs:
       - name: Setup for aarch64
         if: matrix.arch == 'aarch64'
         run: |
-          echo "Apt Mirrors"
-          cat /etc/apt/apt-mirrors.txt
-          sudo dpkg --add-architecture arm64
-          sudo sed -i 's|http://archive.ubuntu.com/ubuntu|http://ports.ubuntu.com/ubuntu-ports|g' /etc/apt/sources.list
-          sudo sed -i 's|http://security.ubuntu.com/ubuntu|http://ports.ubuntu.com/ubuntu-ports|g' /etc/apt/sources.list
-          echo "Apt Sources"
-          cat /etc/apt/sources.list
+          dpkg --add-architecture arm64
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu libssl-dev:arm64
           echo "export CC_aarch64-unknown-linux-musl=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
